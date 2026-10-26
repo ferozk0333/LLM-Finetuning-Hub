@@ -6,8 +6,8 @@ A collection of my LLM and SLM fine-tuning experiments, from parameter-efficient
 
 | Experiment | Method | Base model | Task | Model |
 |---|---|---|---|---|
-| [`sft-finetuning`](./sft-finetuning) | Full SFT (TRL), completion-only loss | Gemma 3 270M-it | Extract food and drink items from text into a structured format | [Hugging Face](https://huggingface.co/ferozk0333/Text-Extraction-NER-FoodExtract-Gemma-3-270M-Fine-Tuned-v1) |
-| [`lora-finetuning`](./lora-finetuning) | LoRA (PEFT), 8-bit | Gemma 7B | Customer support reply generation | n/a |
+| [`sft-finetuning`](./sft-finetuning) | Full SFT (TRL) | Gemma 3 270M-it | Extract food and drink items from text into a structured format | [Hugging Face](https://huggingface.co/ferozk0333/Text-Extraction-NER-FoodExtract-Gemma-3-270M-Fine-Tuned-v1) |
+| [`lora-finetuning`](./lora-finetuning) | LoRA (PEFT), 8-bit Quantization | Gemma 7B | Customer support reply generation | Notebook |
 
 ## Featured: Food & Drink Extraction with Gemma 3 270M
 
@@ -28,7 +28,9 @@ foods: creamy tomato soup, grilled cheese sandwich, iced lemonade
 drinks: Diet Coke
 ```
 
-![Demo](./assets/demo.png)
+**Gradio Demo Screenshot**
+<img width="1893" height="723" alt="Screenshot 2026-10-25 at 8 24 11 PM" src="https://github.com/user-attachments/assets/5f3ec249-82ad-4ce1-bee5-b345b3f8b952" />
+
 
 - **Dataset:** [mrdbourke/FoodExtract-1k](https://huggingface.co/datasets/mrdbourke/FoodExtract-1k) (1,420 samples, 80/20 train/test split)
 - **Training:** TRL `SFTTrainer`, prompt/completion format so loss is computed on the answer only
