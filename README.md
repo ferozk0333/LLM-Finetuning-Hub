@@ -1,36 +1,67 @@
-# Fine-Tuning-Gemma-with-LoRA-for-Customer-Support-Automation
+# LLM-Finetuning-Hub
 
-This project fine-tunes the [Gemma-7b](https://huggingface.co/google/gemma-7b) model using **LoRA (Low-Rank Adaptation)** on a customer support tweet dataset from Hugging Face to generate automated support replies efficiently.
+A collection of my LLM and SLM fine-tuning experiments, from parameter-efficient LoRA to full supervised fine-tuning (SFT) for structured extraction. Each experiment lives in its own folder with a notebook you can rerun. Trained models are published on my [Hugging Face profile](https://huggingface.co/ferozk0333).
 
-## Objective
-Train a memory-efficient LLM to generate accurate, context-aware customer support responses.
+## Experiments
 
-## Tools & Libraries
-- [Transformers](https://huggingface.co/transformers/)
-- [PEFT](https://github.com/huggingface/peft) for LoRA
-- Hugging Face Datasets
-- PyTorch
+| Experiment | Method | Base model | Task | Model |
+|---|---|---|---|---|
+| [`sft-finetuning`](./sft-finetuning) | Full SFT (TRL), completion-only loss | Gemma 3 270M-it | Extract food and drink items from text into a structured format | [Hugging Face](https://huggingface.co/ferozk0333/Text-Extraction-NER-FoodExtract-Gemma-3-270M-Fine-Tuned-v1) |
+| [`lora-finetuning`](./lora-finetuning) | LoRA (PEFT), 8-bit | Gemma 7B | Customer support reply generation | n/a |
 
-## Steps
+## Featured: Food & Drink Extraction with Gemma 3 270M
 
-1. **Load Dataset & Tokenizer**
-   - Used `mo-customer-support-tweets-945k` dataset.
-   - Loaded and modified the tokenizer with a `[PAD]` token.
+A 270M-parameter model fine-tuned to turn raw text into a structured extraction.
 
-2. **Tokenize Dataset**
-   - Tokenized both `input` (customer inquiries) and `output` (responses).
-   - Used padding and truncation.
+**Input**
 
-3. **Load & Prepare Gemma Model**
-   - Loaded model in 8-bit with `load_in_8bit=True`.
-   - Configured LoRA (rank=16, alpha=32, dropout=0.1).
-   - Applied LoRA to attention modules (`q_proj`, `v_proj`).
+```
+Hello, my name is Feroz!! I visited a beautiful eating place yesterday. It was a rustic wooden table set with a bowl of creamy tomato soup, a golden grilled cheese sandwich, and a tall glass of iced lemonade. However, when I got home, I also had a Diet Coke
+```
 
-4. **Training Setup**
-   - Defined `TrainingArguments` (batch size, epochs, learning rate, fp16).
-   - Used `Trainer` and `DataCollatorForSeq2Seq`.
+**Output**
 
-5. **Train & Save**
-   - Trained for 3 epochs with gradient accumulation.
-   - Saved both model and tokenizer for inference.
+```
+food_or_drink: 1
+tags: fi
+foods: creamy tomato soup, grilled cheese sandwich, iced lemonade
+drinks: Diet Coke
+```
 
+![Demo](./assets/demo.png)
+
+- **Dataset:** [mrdbourke/FoodExtract-1k](https://huggingface.co/datasets/mrdbourke/FoodExtract-1k) (1,420 samples, 80/20 train/test split)
+- **Training:** TRL `SFTTrainer`, prompt/completion format so loss is computed on the answer only
+- **Result:** the base model ignores the format, while the fine-tuned model returns the structured output consistently
+
+## Quick start
+
+```python
+from transformers import pipeline
+
+gen = pipeline(
+    "text-generation",
+    model="ferozk0333/Text-Extraction-NER-FoodExtract-Gemma-3-270M-Fine-Tuned-v1",
+    device_map="auto",
+)
+msg = [{"role": "user", "content": "A bowl of tomato soup with a glass of iced lemonade"}]
+print(gen(msg, max_new_tokens=64, do_sample=False)[0]["generated_text"][-1]["content"])
+```
+
+Pass the raw text only, with no instruction prompt, since that is how the model was trained.
+
+## Tech stack
+
+PyTorch, Hugging Face Transformers, TRL, PEFT, Datasets, Gradio (demo)
+
+## Repo structure
+
+```
+sft-finetuning/    # Gemma 3 270M, food extraction (SFT)
+lora-finetuning/   # Gemma 7B, customer support (LoRA)
+assets/            # demo screenshot
+```
+
+## Notes
+
+Experiments are for learning and prototyping. Gemma models are subject to Google's [Gemma terms of use](https://ai.google.dev/gemma/terms).
