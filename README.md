@@ -7,7 +7,7 @@ A collection of my LLM and SLM fine-tuning experiments, from parameter-efficient
 | Experiment | Method | Base model | Task | Model |
 |---|---|---|---|---|
 | [`sft-finetuning`](./sft-finetuning) | Full SFT (TRL) | Gemma 3 270M-it | Extract food and drink items from text into a structured format | [Hugging Face](https://huggingface.co/ferozk0333/Text-Extraction-NER-FoodExtract-Gemma-3-270M-Fine-Tuned-v1) |
-| [`lora-finetuning`](./lora-finetuning) | LoRA (PEFT), 8-bit Quantization | Gemma 7B | Customer support reply generation | Notebook |
+| [`lora-finetuning`](./lora-finetuning) | LoRA (PEFT), 8-bit Quantization | Gemma 7B | Tone alignment for conversational chatbot | Notebook |
 
 ## Featured: Food & Drink Extraction with Gemma 3 270M
 
